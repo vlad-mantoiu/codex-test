@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="tabs">
+  <button class="tab active" onclick="showTab('action')">Action</button>
+  <button class="tab" onclick="showTab('analytics')">Analytics</button>
+</section>
+
+<section id="action" class="tab-panel active">
+  <div class="panel-grid">
+    <div class="card">
+      <h2>Ticket List</h2>
+      <ul class="ticket-list">
+        {% for ticket in tickets %}
+        <li class="ticket-item">
+          <div class="ticket-header">
+            <div>
+              <h3>{{ ticket.subject }}</h3>
+              <p class="meta">{{ ticket.ticket_id }} • {{ ticket.channel }} • {{ ticket.customer }}</p>
+            </div>
+            {% set decision = policy_decisions[ticket.ticket_id] %}
+            <span class="risk risk-{{ decision.risk_level }}">{{ decision.risk_level|upper }}</span>
+          </div>
+          <p class="message">“{{ ticket.last_message }}”</p>
+          <div class="details">
+            <div>
+              <h4>Draft Response</h4>
+              <p>{{ ticket.draft_response }}</p>
+            </div>
+            <div>
+              <h4>Internal Note</h4>
+              <p>{{ ticket.internal_note }}</p>
+            </div>
+          </div>
+          <div class="decision">
+            <p><strong>Why:</strong> {{ decision.reason }}</p>
+            <p><strong>Recommended:</strong> {{ decision.recommended_handling }}</p>
+            {% if decision.conflict_detected %}
+            <p class="conflict">Policy conflict detected. Require explicit approval.</p>
+            {% endif %}
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="logDecision('{{ ticket.ticket_id }}', 'approved')">Approve</button>
+            <button class="btn secondary" onclick="logDecision('{{ ticket.ticket_id }}', 'edited')">Edit</button>
+            <button class="btn ghost" onclick="logDecision('{{ ticket.ticket_id }}', 'rejected')">Reject</button>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Risk & Escalation</h2>
+      <ul>
+        {% for ticket in tickets %}
+        <li>
+          <strong>{{ ticket.ticket_id }}</strong> – {{ policy_decisions[ticket.ticket_id].reason }}
+        </li>
+        {% endfor %}
+      </ul>
+      <div class="note">
+        <p>
+          All proposed replacements, refunds, vouchers, or goodwill gestures require
+          explicit human approval and are logged for auditability.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="analytics" class="tab-panel">
+  <div class="panel-grid">
+    <div class="card">
+      <h2>Daily Summary ({{ daily_summary.date }})</h2>
+      <p><strong>Ticket volume:</strong> {{ daily_summary.ticket_volume }}</p>
+      <p><strong>Next summary:</strong> {{ next_daily_summary }} ACDT (configurable)</p>
+      <div>
+        <h4>Top intents</h4>
+        <ul>
+          {% for intent, count in daily_summary.top_intents %}
+          <li>{{ intent }} – {{ count }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h4>Notable events</h4>
+        <ul>
+          {% for event in daily_summary.notable %}
+          <li>{{ event }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Weekly Summary</h2>
+      <ul>
+        {% for ticket_id in weekly_summary.high_risk_tickets %}
+        <li>High-risk ticket: {{ ticket_id }}</li>
+        {% endfor %}
+      </ul>
+      <p><strong>Repeat issues:</strong> {{ weekly_summary.repeat_issues }}</p>
+    </div>
+    <div class="card">
+      <h2>Monthly Summary</h2>
+      <ul>
+        {% for ticket_id in monthly_summary.high_risk_tickets %}
+        <li>High-risk ticket: {{ ticket_id }}</li>
+        {% endfor %}
+      </ul>
+      <p><strong>Repeat issues:</strong> {{ monthly_summary.repeat_issues }}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-panel').forEach((panel) => {
+      panel.classList.remove('active');
+    });
+    document.querySelectorAll('.tab').forEach((tab) => {
+      tab.classList.remove('active');
+    });
+    document.getElementById(tabId).classList.add('active');
+    document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+  }
+
+  function logDecision(ticketId, decision) {
+    fetch('/api/log', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ticket_id: ticketId,
+        human_decision: decision,
+        notes: 'Logged from UI'
+      })
+    }).then(() => {
+      alert(`Decision '${decision}' recorded for ${ticketId}.`);
+    });
+  }
+</script>
+{% endblock %}

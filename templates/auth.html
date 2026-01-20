@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="card">
+  <h2>Internal Access Required</h2>
+  <p>
+    This POC is restricted to internal users. Add the internal token to the URL
+    as <code>?token=local-dev</code> or pass <code>X-Internal-Token</code> header.
+  </p>
+  <p>
+    This guardrail enforces the Human-in-the-Loop requirement and prevents
+    accidental exposure.
+  </p>
+</section>
+{% endblock %}

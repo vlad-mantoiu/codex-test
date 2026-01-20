@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HITL CX Copilot POC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>HITL CX Copilot</h1>
+        <p>Read-only, suggestion-only workspace for premium ecommerce CX.</p>
+      </div>
+      <div class="header-meta">
+        <span class="badge">Local POC</span>
+        <span class="badge badge-outline">Human approval required</span>
+      </div>
+    </header>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="app-footer">
+      <p>
+        Auditability over cleverness. Nothing is sent externally without human approval.
+      </p>
+    </footer>
+  </body>
+</html>
