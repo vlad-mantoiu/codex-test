@@ -45,6 +45,16 @@ python app.py
 
 Open `http://localhost:5000/?token=local-dev`.
 
+## Configuration (Environment Variables)
+
+Set these to enable live integrations:
+
+- `GORGIAS_API_BASE` (e.g., `https://yourbrand.gorgias.com/api/`)
+- `GORGIAS_USERNAME`
+- `GORGIAS_PASSWORD`
+- `OPENAI_API_KEY`
+- `TONE_GUIDE_PATH` (optional, defaults to `tone/tone_of_voice.md`)
+
 ## Assumptions & Next Steps
 
 - Local-only POC, no persistence beyond audit logs.
