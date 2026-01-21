@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
 <section class="tabs">
-  <button class="tab active" onclick="showTab('action')">Action</button>
+  <button class="tab active" onclick="showTab('action')">Ticketing & Review</button>
   <button class="tab" onclick="showTab('analytics')">Analytics</button>
 </section>
 
 <section id="action" class="tab-panel active">
   <div class="panel-grid">
     <div class="card">
-      <h2>Ticket List</h2>
+      <h2>Ticketing & Review</h2>
       <ul class="ticket-list">
         {% for ticket in tickets %}
         <li class="ticket-item">
